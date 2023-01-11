@@ -1,0 +1,11 @@
+{
+  "name": "led-widgets",
+  "version": "0.1.0",
+  "description": "A set of LED-inspired widgets for use with Streamer.bot",
+  "author": "Bruno Marques <bruno@bmarques.net>",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "bdfparser": "2.2.5",
+    "fetchline": "1.0.1"
+  }
+}

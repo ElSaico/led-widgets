@@ -1,4 +1,6 @@
 fonts/
+labels/
 node_modules/
+.idea/
 *.swp
 *.swo

@@ -8,18 +8,22 @@ function connect() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    let ws = connect();
+    const params = new URLSearchParams(window.location.search);
     const font = await $Font(fetchline('fonts/metro.bdf'));
-    const panel = new LEDPanel(document.getElementById('panel'), {x: 80, y: 8});
-    panel.drawLoopable(font, 'teste', '#bfff00', 100);
+    const filename = params.get('filename');
+    const file = await fetch(`labels/${filename}`);
 
+    const panel = new LEDPanel(document.getElementById('panel'), {x: 80, y: 8});
+    panel.drawLoopable(font, await file.text(), '#bfff00', 100);
+
+    let ws = connect();
     ws.onopen = () => {
         ws.send(JSON.stringify({
             "request": "Subscribe",
             "events": {
               "File Watcher": ["Changed"]
             },
-            "id": "123"
+            "id": filename
         }));
     }
     ws.onclose = () => {

@@ -21,12 +21,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         ws.send(JSON.stringify({
             "request": "Subscribe",
             "events": {
-              "File Watcher": ["Changed"]
+              "FileWatcher": ["Changed"]
             },
             "id": filename
         }));
     }
     ws.onclose = () => {
         setTimeout(() => { ws = connect; }, 10000);
+    };
+    ws.onmessage = event => {
+        const data = JSON.parse(event.data);
+        if (data.status) return;
+        if (data.event.source === 'FileWatcher' && data.event.type === 'Changed' && data.data.fileName === filename) {
+            panel.drawLoopable(font, data.data.lines[0], '#bfff00', 100);
+        }
     };
 });

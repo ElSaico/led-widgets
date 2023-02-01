@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     ws.send(JSON.stringify({
       request: 'Subscribe',
       events: {
-        Twitch: ['Follow', 'Cheer', 'Raid', 'Sub', 'ReSub', 'GiftSub', 'GiftBomb']
+        Raw: ['Action']
       },
       id: 'alerts'
     }));
@@ -47,51 +47,47 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // TODO counters
     // TODO shoutout
-    if (data.event.source === 'Twitch') {
-      let title, game;
-      let userName = displayUser(data.data.displayName, data.data.userName, data.data.isAnonymous);
-      let message = data.data.message;
-      switch (data.event.type) {
-        case 'Follow':
-          title = 'Novo passageiro no Comboio';
-          userName = displayUser(data.data.user_name, data.data.user_login, false);
-          break;
-        case 'Cheer':
-          title = `${pluralize(data.data.message.bits, 'bit enviado', 'bits enviados')} para o Comboio`;
-          userName = displayUser(data.data.message.displayName, data.data.message.userName, data.data.message.isAnonymous);
-          message = data.data.message.message;
-          break;
-        case 'Raid':
-          title = `Embarque de uma raid com ${pluralize(data.data.viewerCount, 'pessoa', 'pessoas')}`;
-          break;
-        case 'Sub':
-          title = 'Passe adquirido pela primeira vez';
-          break;
-        case 'ReSub':
-          title = `Passe renovado, somando ${data.data.cumulativeMonths} meses`;
-          break;
-        case 'GiftSub':
-          if (data.data.fromSubBomb) return;
-          title = `Passe doado por ${userName}`;
-          userName = displayUser(data.data.recipientDisplayName, data.data.recipientUsername, false);
-          break;
-        case 'GiftBomb':
-          title = `Doação de ${data.data.gifts} passes simultâneos`;
-          break;
-      }
-      if (title) {
-        // TODO can we call TTS from here?
-        await panel.drawScroll(fontIbm, title, COLOR_IBM, 25);
-      }
-      if (userName) {
-        await panel.drawAnimatedVertical(fontMetro, userName, COLOR_METRO, 250);
-      }
-      if (game) {
-        await panel.drawAnimatedHorizontal(fontMetro, game, COLOR_METRO, 50);
-      }
-      if (message) {
-        await panel.drawScroll(fontIbm, message, COLOR_IBM, 25);
-      }
+    const args = data.data.arguments;
+    let title, game;
+    let userName = displayUser(args.user, args.userName, args.anonymous);
+    const message = args.message;
+    switch (args.actionName) {
+      case 'Follow':
+        title = 'Novo passageiro no Comboio';
+        break;
+      case 'Bits':
+      case 'Bits: Anônimo':
+        title = `${pluralize(args.bits, 'bit enviado', 'bits enviados')} para o Comboio`;
+        break;
+      case 'Raid':
+        title = `Embarque de uma raid com ${pluralize(args.viewers, 'pessoa', 'pessoas')}`;
+        break;
+      case 'Sub':
+        title = 'Passe adquirido pela primeira vez';
+        break;
+      case 'ReSub':
+        title = `Passe renovado, somando ${args.cumulative} meses`;
+        break;
+      case 'Sub: Gift':
+        title = `Passe doado por ${userName}`;
+        userName = displayUser(args.recipientUser, args.recipientUserName, false);
+        break;
+      case 'Sub: Bomb':
+        title = `Doação de ${args.gifts} passes simultâneos`;
+        break;
+    }
+    if (title) {
+      // TODO can we call TTS from here?
+      await panel.drawScroll(fontIbm, title, COLOR_IBM, 25);
+    }
+    if (userName) {
+      await panel.drawAnimatedVertical(fontMetro, userName, COLOR_METRO, 250);
+    }
+    if (game) {
+      await panel.drawAnimatedHorizontal(fontMetro, game, COLOR_METRO, 50);
+    }
+    if (message) {
+      await panel.drawScroll(fontIbm, message, COLOR_IBM, 25);
     }
   };
 });

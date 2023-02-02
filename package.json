@@ -6,6 +6,7 @@
   "license": "MPL-2.0",
   "dependencies": {
     "bdfparser": "2.2.5",
-    "fetchline": "1.0.1"
+    "fetchline": "1.0.1",
+    "modern-async": "^1.1.2"
   }
 }

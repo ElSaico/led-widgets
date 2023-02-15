@@ -79,6 +79,7 @@ export default class LEDPanel {
             this.drawCentered(bitmap, color);
         }
     }
+    // time spent: (bitmap width + x resolution) * interval
     drawScroll(font, text, color, interval) {
         return __awaiter(this, void 0, void 0, function* () {
             clearInterval(this.timer);
@@ -90,6 +91,7 @@ export default class LEDPanel {
             }
         });
     }
+    // time spent: 2 * y resolution (typically 8) * interval
     drawAnimatedVertical(font, text, color, interval) {
         return __awaiter(this, void 0, void 0, function* () {
             clearInterval(this.timer);
@@ -107,6 +109,7 @@ export default class LEDPanel {
             }
         });
     }
+    // time spent: 2 * bitmap width * interval
     drawAnimatedHorizontal(font, text, color, interval) {
         return __awaiter(this, void 0, void 0, function* () {
             clearInterval(this.timer);

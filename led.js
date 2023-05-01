@@ -51,9 +51,8 @@ export default class LEDPanel {
     drawMatrix(data, color) {
         data.forEach((row, i) => this.drawRow(i, row, color));
     }
-    drawCentered(bitmap, color) {
-        const offset = (this.resolution.x - bitmap.width()) / 2;
-        bitmap.crop(this.resolution.x, bitmap.height(), -offset);
+    drawBitmap(bitmap, color, yOffset) {
+        bitmap.crop(this.resolution.x, bitmap.height(), -yOffset);
         this.drawMatrix(bitmap.todata(1), color);
     }
     drawLooping(bitmap, color, interval) {
@@ -68,15 +67,19 @@ export default class LEDPanel {
             this.drawMatrix(newBitmap.todata(1), color);
         }, interval);
     }
+    drawFixed(font, text, color, offset) {
+        clearInterval(this.timer);
+        this.drawBitmap(font.draw(text), color, offset);
+    }
     drawLoopable(font, text, color, interval) {
         clearInterval(this.timer);
         const bitmap = font.draw(text);
         if (bitmap.width() > this.resolution.x) {
             bitmap.crop(bitmap.width() + 2*font.headers.fbbx, bitmap.height());
             this.drawLooping(bitmap, color, interval);
-        }
-        else {
-            this.drawCentered(bitmap, color);
+        } else {
+            const offset = (this.resolution.x - bitmap.width()) / 2;
+            this.drawBitmap(bitmap, color, offset);
         }
     }
     // time spent: (bitmap width + x resolution) * interval
